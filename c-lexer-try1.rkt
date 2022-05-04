@@ -5,27 +5,50 @@
 ; Gael Eduardo Pérez Gómez A01753336
 
 #lang racket
-(require parser-tools/lex)
+(require parser-tools/lex
+        (prefix-in : parser-tools/lex-sre))
 
 (define-lex-abbrevs
+  ; --> BASICS
   [letter         (union (char-range #\a #\z) (char-range #\A #\Z))]
   [digit          (char-range #\0 #\9)]
   [underscore     #\_]
+  
+  ; --> NUMBERS
+  ; integer
+  [integer        (:: (:? #\-) (repetition 1 +inf.0 digit))]
+  ; float
+  [floatnumber (:or pointfloat exponentfloat)]
+  [pointfloat (:or (:: (:?  (:: (:? #\-) intpart)) fraction) (:: intpart "."))]
+  [exponentfloat (:: (:or (:: (:? #\-) intpart) pointfloat) exponent)]
+  [intpart (:+ digit)]
+  [fraction (:: "." (:+ digit))]
+  [exponent (:: (:or "E" "e") (:? (:or "+" "-")) (:+ digit))]
+
+  ; --> VARIALES
   [identifier     (concatenation (union letter underscore)
                                  (repetition 0 +inf.0 (union letter digit underscore)))]
-  [integer        (repetition 1 +inf.0 digit)]
 
+  ; --> STRINGS
   [char-content   (char-complement (char-set "'\n"))]
   [char-literal   (union (concatenation #\' char-content #\')
                          "'\\n'" "'\\\\'")]
   [string-content (union (char-complement (char-set "\"\n")))]
   [string-literal (union (concatenation #\" (repetition 0 +inf.0 string-content) #\")
                          "\"\\n\"" "\"\\\\\"")]
+  
+  ; --> KEYWORDS
   [keyword        (union "if" "else" "while" "print" "putc")]
+
+  ; --> OPERATOR
   [operator       (union "*" "/" "%" "+" "-" "-"
                          "<" "<=" ">" ">=" "==" "!="
                          "!" "=" "&&" "||")]
+  
+  ; --> SYMBOLS
   [symbol         (union "(" ")" "{" "}" ";" ",")]
+
+  ; --> COMMENTS
   [comment        (concatenation "/*" (complement (concatenation any-string "*/" any-string)) "*/")])
 
 (define operators-ht
@@ -55,11 +78,12 @@
     ; lexer categories (8 NO whitespace)
     (lexer-src-pos
      [integer        (token 'Integer (string->number lexeme))]
+     [floatnumber    (token 'Float (string->number lexeme))]
      [char-literal   (token 'Char lexeme)]
      [string-literal (token 'String  lexeme)]
-     [keyword        (token (lexeme->keyword  lexeme))]
-     [operator       (token (lexeme->operator lexeme))]
-     [symbol         (token (lexeme->symbol   lexeme))]
+     [keyword        (token (lexeme->keyword  lexeme) lexeme)]
+     [operator       (token (lexeme->operator lexeme) lexeme)]
+     [symbol         (token (lexeme->symbol   lexeme) lexeme)]
      [comment        (token 'Comment lexeme)]
      [whitespace     #f]
      [identifier     (token 'Identifier lexeme)]
@@ -145,11 +169,14 @@ while (count < 10) {
 TEST
   )
 
-; (define test6 #<<TEST
-; /* This is a comment */
-; var = -8;
-; TEST
-;   )
+(define test6 #<<TEST
+/* This is a comment */
+var = -8;
+varPos = -8.5;
+varExpNe = -8E-98;
+varExpPos = -8e-9;
+TEST
+  )
 
 (define (display-tokens ts)
   (for ([t ts])
@@ -157,15 +184,15 @@ TEST
       (display x) (display "\t\t"))
     (newline)))
 
-"TEST 1"
-(display-tokens (string->tokens test1))
-"TEST 2"
-(display-tokens (string->tokens test2))
-"TEST 3"
-(display-tokens (string->tokens test3))
-"TEST 4"
-(display-tokens (string->tokens test4))
-"TEST 5"
-(display-tokens (string->tokens test5))
-; "TEST 6"
-; (display-tokens (string->tokens test6))
+; "TEST 1"
+; (display-tokens (string->tokens test1))
+; "TEST 2"
+; (display-tokens (string->tokens test2))
+; "TEST 3"
+; (display-tokens (string->tokens test3))
+; "TEST 4"
+; (display-tokens (string->tokens test4))
+; "TEST 5"
+; (display-tokens (string->tokens test5))
+"TEST 6"
+(display-tokens (string->tokens test6))
