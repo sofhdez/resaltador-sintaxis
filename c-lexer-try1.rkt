@@ -5,6 +5,7 @@
 ; Gael Eduardo Pérez Gómez A01753336
 
 ; TODO
+; https://www.codewithharry.com/blogpost/cpp-cheatsheet
 ; - booleans
 ; - libraries
 ; - dividir keywords en ciclos y condicionales
