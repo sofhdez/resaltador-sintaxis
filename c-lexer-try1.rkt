@@ -14,6 +14,9 @@
   [digit          (char-range #\0 #\9)]
   [underscore     #\_]
   
+  ; --> DATA TYPES
+  ; integer
+
   ; --> NUMBERS
   ; integer
   [integer        (:: (:? #\-) (repetition 1 +inf.0 digit))]
@@ -81,7 +84,7 @@
      [floatnumber    (token 'Float (string->number lexeme))]
      [char-literal   (token 'Char lexeme)]
      [string-literal (token 'String  lexeme)]
-     [keyword        (token (lexeme->keyword  lexeme) lexeme)]
+     [keyword        (token (lexeme->keyword  lexeme) lexeme)]  ; dividir en ciclos y condiciones
      [operator       (token (lexeme->operator lexeme) lexeme)]
      [symbol         (token (lexeme->symbol   lexeme) lexeme)]
      [comment        (token 'Comment lexeme)]
