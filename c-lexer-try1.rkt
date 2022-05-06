@@ -4,18 +4,24 @@
 ; Alfonso Pineda Castillo A01660394
 ; Gael Eduardo Pérez Gómez A01753336
 
+; TODO
+; https://www.codewithharry.com/blogpost/cpp-cheatsheet
+; - booleans
+; - libraries
+; - dividir keywords en ciclos y condicionales
+; - tipos de data
+; - definir una función
+; - isnumber(char) vemos...
+
 #lang racket
 (require parser-tools/lex
-        (prefix-in : parser-tools/lex-sre))
+         (prefix-in : parser-tools/lex-sre))
 
 (define-lex-abbrevs
   ; --> BASICS
   [letter         (union (char-range #\a #\z) (char-range #\A #\Z))]
   [digit          (char-range #\0 #\9)]
   [underscore     #\_]
-  
-  ; --> DATA TYPES
-  ; integer
 
   ; --> NUMBERS
   ; integer
@@ -39,7 +45,7 @@
   [string-content (union (char-complement (char-set "\"\n")))]
   [string-literal (union (concatenation #\" (repetition 0 +inf.0 string-content) #\")
                          "\"\\n\"" "\"\\\\\"")]
-  
+
   ; --> KEYWORDS
   [keyword        (union "if" "else" "while" "print" "putc")]
 
@@ -47,7 +53,7 @@
   [operator       (union "*" "/" "%" "+" "-" "-"
                          "<" "<=" ">" ">=" "==" "!="
                          "!" "=" "&&" "||")]
-  
+
   ; --> SYMBOLS
   [symbol         (union "(" ")" "{" "}" ";" ",")]
 
@@ -84,7 +90,7 @@
      [floatnumber    (token 'Float (string->number lexeme))]
      [char-literal   (token 'Char lexeme)]
      [string-literal (token 'String  lexeme)]
-     [keyword        (token (lexeme->keyword  lexeme) lexeme)]  ; dividir en ciclos y condiciones
+     [keyword        (token (lexeme->keyword  lexeme) lexeme)]
      [operator       (token (lexeme->operator lexeme) lexeme)]
      [symbol         (token (lexeme->symbol   lexeme) lexeme)]
      [comment        (token 'Comment lexeme)]
