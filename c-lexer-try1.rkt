@@ -6,10 +6,8 @@
 
 ; TODO
 ; https://www.codewithharry.com/blogpost/cpp-cheatsheet
-; - booleans
 ; - libraries
 ; - dividir keywords en ciclos y condicionales
-; - tipos de data
 ; - definir una función
 ; - isnumber(char) vemos...
 
@@ -23,16 +21,22 @@
   [digit          (char-range #\0 #\9)]
   [underscore     #\_]
 
+  ; --> DATA TYPES
+  [datatype        (union "int" "float" "void" "bool" "char")]
+
   ; --> NUMBERS
   ; integer
   [integer        (:: (:? #\-) (repetition 1 +inf.0 digit))]
   ; float
-  [floatnumber (:or pointfloat exponentfloat)]
-  [pointfloat (:or (:: (:?  (:: (:? #\-) intpart)) fraction) (:: intpart "."))]
-  [exponentfloat (:: (:or (:: (:? #\-) intpart) pointfloat) exponent)]
-  [intpart (:+ digit)]
-  [fraction (:: "." (:+ digit))]
-  [exponent (:: (:or "E" "e") (:? (:or "+" "-")) (:+ digit))]
+  [floatnumber    (:or pointfloat exponentfloat)]
+  [pointfloat     (:or (:: (:?  (:: (:? #\-) intpart)) fraction) (:: intpart "."))]
+  [exponentfloat  (:: (:or (:: (:? #\-) intpart) pointfloat) exponent)]
+  [intpart        (:+ digit)]
+  [fraction       (:: "." (:+ digit))]
+  [exponent       (:: (:or "E" "e") (:? (:or "+" "-")) (:+ digit))]
+
+  ; --> BOOLEAN
+  [bool        (union "true" "false")]
 
   ; --> VARIALES
   [identifier     (concatenation (union letter underscore)
@@ -70,6 +74,8 @@
         "{" 'LeftBrace  "}" 'RightBrace
         ";" 'Semicolon  "," 'Comma))
 
+(define (lexeme->datatype l) (string->symbol (~a "Datatype_" l))) ; to concatenate "Datatype_lexeme"
+(define (lexeme->bool l) (string->symbol (~a "Bool")))            ; 
 (define (lexeme->keyword  l) (string->symbol (~a "Keyword_" l)))  ; to concatenate "Keyword_lexeme"
 (define (lexeme->operator l) (hash-ref operators-ht l))           ; return the key of the value in the hashtable
 (define (lexeme->symbol   l) (hash-ref symbols-ht   l))           ; key NAME lexer
@@ -88,8 +94,10 @@
     (lexer-src-pos
      [integer        (token 'Integer (string->number lexeme))]
      [floatnumber    (token 'Float (string->number lexeme))]
-     [char-literal   (token 'Char lexeme)]
+     [char-literal   (token 'Char lexeme)] 
      [string-literal (token 'String  lexeme)]
+     [datatype       (token (lexeme->datatype  lexeme) lexeme)]
+     [bool           (token (lexeme->bool  lexeme) lexeme)]
      [keyword        (token (lexeme->keyword  lexeme) lexeme)]
      [operator       (token (lexeme->operator lexeme) lexeme)]
      [symbol         (token (lexeme->symbol   lexeme) lexeme)]
@@ -180,10 +188,11 @@ TEST
 
 (define test6 #<<TEST
 /* This is a comment */
-var = -8;
-varPos = -8.5;
-varExpNe = -8E-98;
-varExpPos = -8e-9;
+int test1 = 5;
+float test2 = 2.2;
+
+bool test3 = true;
+bool test4 = false;
 TEST
   )
 
