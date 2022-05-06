@@ -4,6 +4,14 @@
 ; Alfonso Pineda Castillo A01660394
 ; Gael Eduardo Pérez Gómez A01753336
 
+; TODO
+; - booleans
+; - libraries
+; - dividir keywords en ciclos y condicionales
+; - tipos de data
+; - definir una función
+; - isnumber(char) vemos...
+
 #lang racket
 (require parser-tools/lex
         (prefix-in : parser-tools/lex-sre))
