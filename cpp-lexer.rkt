@@ -134,7 +134,7 @@
      ;  [function       (token (lexeme->bool  lexeme) lexeme)]
      [comment        (token 'Comment lexeme)]
      [whitespace     #f]
-     [identifier     (token 'Identifier lexeme)]
+     [identifier     (token 'Variable lexeme)]
      [(eof)          (token 'End_of_input)]))
   (define (next-token) (my-lexer ip))
   next-token)
@@ -185,7 +185,18 @@ TEST
 ; Llamamos al lexer
 (display-tokens (string->tokens (port->string (open-input-file "micodigo.txt"))))
 
-; Escribimos el archivo
-(define out (open-output-file "data.txt"))
+; Creamos el archivo de salida
+(define out (open-output-file "data.html"))
+
+; Agregamos la hoja de estilos
+(display "<link rel='stylesheet' href='style.css'>\n\n" out)
+
+(display "<div class='block'>\n\n" out)
+
+; Se añade la salida del lexer (AQUI HACER QUE SE AGREGUE LA CLASE Y LOS DIV)
 (display-lines (string->tokens (port->string (open-input-file "micodigo.txt"))) out)
+
+(display "</div>\n\n" out)
+
+; Cerramos el archivo
 (close-output-port out)

@@ -1,0 +1,59 @@
+/* 
+CATEGORÍAS LÉXICAS
+integer
+floatnumber
+char-literal
+string-literal
+datatype
+bool
+keyword
+conditional
+loop
+operator
+delimiter
+symbol
+comment
+identifier
+*/
+.integer {
+    background-color: red;
+}
+.floatnumber {
+    background-color: rgb(134, 23, 23);
+}
+.char-literal {
+    background-color: greenyellow;
+}
+.string-literal {
+    background-color: green;
+}
+.datatype {
+    background-color: violet;
+}
+.bool {
+    background-color: rgb(255, 162, 0);
+}
+.keyword {
+    background-color: rgb(78, 78, 242);
+}
+.conditional {
+    background-color: gold;
+}
+.loop {
+    background-color: rgb(142, 22, 255);
+}
+.operator {
+    background-color: rgb(255, 112, 60);
+}
+.delimiter {
+    background-color: gray;
+}
+.symbol {
+    background-color: palevioletred;
+}
+.comment {
+    background-color: wheat;
+}
+.identifier {
+    background-color: hotpink;
+}
