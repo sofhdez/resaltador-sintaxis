@@ -12,8 +12,22 @@
 ; - isnumber(char) vemos...
 
 #lang racket
-(require parser-tools/lex
+(require "generadorArchivo.rkt"
+         parser-tools/lex
          (prefix-in : parser-tools/lex-sre))
+
+; -------------- Función que crea el output.txt --------------
+(define (generate file lst)
+  (if(not(null? lst))
+     (begin
+       (display (caar lst) file)
+       (display " " file)
+       (display (first (cdar lst)) file)
+       (newline file)
+       (generate file (cdr lst)))
+     (begin
+       (list)))
+  (close-output-port file))
 
 (define-lex-abbrevs
   ; --> BASICS
@@ -75,7 +89,7 @@
         ";" 'Semicolon  "," 'Comma))
 
 (define (lexeme->datatype l) (string->symbol (~a "Datatype_" l))) ; to concatenate "Datatype_lexeme"
-(define (lexeme->bool l) (string->symbol (~a "Bool")))            ; 
+(define (lexeme->bool l) (string->symbol (~a "Bool")))            ;
 (define (lexeme->keyword  l) (string->symbol (~a "Keyword_" l)))  ; to concatenate "Keyword_lexeme"
 (define (lexeme->operator l) (hash-ref operators-ht l))           ; return the key of the value in the hashtable
 (define (lexeme->symbol   l) (hash-ref symbols-ht   l))           ; key NAME lexer
@@ -94,7 +108,7 @@
     (lexer-src-pos
      [integer        (token 'Integer (string->number lexeme))]
      [floatnumber    (token 'Float (string->number lexeme))]
-     [char-literal   (token 'Char lexeme)] 
+     [char-literal   (token 'Char lexeme)]
      [string-literal (token 'String  lexeme)]
      [datatype       (token (lexeme->datatype  lexeme) lexeme)]
      [bool           (token (lexeme->bool  lexeme) lexeme)]
@@ -214,3 +228,15 @@ TEST
 ; (display-tokens (string->tokens test5))
 "TEST 6"
 (display-tokens (string->tokens test6))
+
+(define input "micodigo.txt")
+(define fileOut (nameFileOut input))
+
+; Creamos el archivo de salida
+(define output (open-output-file fileOut))
+
+; Llamamos al lexer
+(display-tokens (open-input-file input))
+
+; Generamos el archivo
+(generate output (display-tokens (open-input-file input)))
