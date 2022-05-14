@@ -10,6 +10,8 @@
 ; - dividir keywords en ciclos y condicionales
 ; - definir una función
 ; - isnumber(char) vemos...
+; - int main() ?
+; - Reubicar el cout cin y endl (no es keyword sino variable)
 
 #lang racket
 (require parser-tools/lex
@@ -50,16 +52,35 @@
   [string-literal (union (concatenation #\" (repetition 0 +inf.0 string-content) #\")
                          "\"\\n\"" "\"\\\\\"")]
 
+  ; --> FUNCTIONS
+  ; [function (concatenation (:: identifier)(delimiter))]
+
   ; --> KEYWORDS
-  [keyword        (union "if" "else" "while" "print" "putc")]
+  ; [keyword        (union "if" "else" "while" "print" "putc")]
+  [keyword        (union "auto" "break" "case" "const" "continue" "default" "do" "enum" "extern"
+                         "goto" "long" "register" "return" "short" "signed" "sizeof" "static" "struct"
+                         "switch" "typedef" "union" "unsigned" "void" "volatile" "mutable" "private" "true"
+                         "using" "delete" "false" "namespace" "proteced" "template" "try" "virtual" "catch"
+                         "friend" "new" "public" "this" "typeid" "class" "explicit" "inline" "operator"
+                         "throw" "typename" "cout" "cin" "endl")]
+
+  ; --> CONDITIONALS
+  [conditional    (union "if" "else" "else if")]
+
+  ; --> LOOPS
+  [loop           (union "while" "for")]
+
 
   ; --> OPERATOR
   [operator       (union "*" "/" "%" "+" "-" "-"
                          "<" "<=" ">" ">=" "==" "!="
-                         "!" "=" "&&" "||")]
+                         "!" "=" "&&" "||" "<<" ">>")]
+
+  ; --> DELIMITERS
+  [delimiter         (union "(" ")" "{" "}")]
 
   ; --> SYMBOLS
-  [symbol         (union "(" ")" "{" "}" ";" ",")]
+  [symbol         (union ";" ",")]
 
   ; --> COMMENTS
   [comment        (concatenation "/*" (complement (concatenation any-string "*/" any-string)) "*/")])
@@ -67,16 +88,22 @@
 (define operators-ht
   (hash "*"  'Op_multiply "/"  'Op_divide    "%" 'Op_mod      "+"  'Op_add           "-"  'Op_subtract
         "<"  'Op_less     "<=" 'Op_lessequal ">" 'Op_greater  ">=" 'Op_greaterequal "==" 'Op_equal
-        "!=" 'Op_notequal "!"  'Op_not       "=" 'Op_assign   "&&" 'Op_and          "||" 'Op_or))
+        "!=" 'Op_notequal "!"  'Op_not       "=" 'Op_assign   "&&" 'Op_and          "||" 'Op_or
+        "<<" 'Left_shift ">>" 'Right_shift))
+
+(define delimiter-ht
+  (hash "(" 'LeftParen  ")" 'RightParen
+        "{" 'LeftBrace  "}" 'RightBrace))
 
 (define symbols-ht
-  (hash "(" 'LeftParen  ")" 'RightParen
-        "{" 'LeftBrace  "}" 'RightBrace
-        ";" 'Semicolon  "," 'Comma))
+  (hash ";" 'Semicolon  "," 'Comma))
 
-(define (lexeme->datatype l) (string->symbol (~a "Datatype_" l))) ; to concatenate "Datatype_lexeme"
-(define (lexeme->bool l) (string->symbol (~a "Bool")))            ; 
-(define (lexeme->keyword  l) (string->symbol (~a "Keyword_" l)))  ; to concatenate "Keyword_lexeme"
+(define (lexeme->datatype l) (string->symbol (~a "Datatype" l))) ; to concatenate "Datatype_lexeme"
+(define (lexeme->bool l) (string->symbol (~a "Bool")))            ;
+(define (lexeme->keyword  l) (string->symbol (~a "Keyword")))  ; to concatenate "Keyword_lexeme"
+(define (lexeme->delimiter  l) (string->symbol (~a "Delimiter")))
+(define (lexeme->conditional  l) (string->symbol (~a "Conditional")))
+(define (lexeme->loop  l) (string->symbol (~a "Loop_")))
 (define (lexeme->operator l) (hash-ref operators-ht l))           ; return the key of the value in the hashtable
 (define (lexeme->symbol   l) (hash-ref symbols-ht   l))           ; key NAME lexer
 (define (lexeme->char     l) (match l
@@ -94,13 +121,17 @@
     (lexer-src-pos
      [integer        (token 'Integer (string->number lexeme))]
      [floatnumber    (token 'Float (string->number lexeme))]
-     [char-literal   (token 'Char lexeme)] 
+     [char-literal   (token 'Char lexeme)]
      [string-literal (token 'String  lexeme)]
      [datatype       (token (lexeme->datatype  lexeme) lexeme)]
      [bool           (token (lexeme->bool  lexeme) lexeme)]
      [keyword        (token (lexeme->keyword  lexeme) lexeme)]
+     [conditional    (token (lexeme->conditional  lexeme) lexeme)]
+     [loop           (token (lexeme->loop  lexeme) lexeme)]
      [operator       (token (lexeme->operator lexeme) lexeme)]
+     [delimiter      (token (lexeme->delimiter   lexeme) lexeme)]
      [symbol         (token (lexeme->symbol   lexeme) lexeme)]
+     ;  [function       (token (lexeme->bool  lexeme) lexeme)]
      [comment        (token 'Comment lexeme)]
      [whitespace     #f]
      [identifier     (token 'Identifier lexeme)]
@@ -196,6 +227,22 @@ bool test4 = false;
 TEST
   )
 
+(define test7 #<<TEST
+/* This is a comment */
+int test1 = 5;
+float test2 = 2.2;
+
+bool test3 = true;
+bool test4 = false;
+if (test 1 == 5){
+  cout << "True" << endl;
+}else{
+  cout << "False" << endl;
+}
+TEST
+
+  )
+
 (define (display-tokens ts)
   (for ([t ts])
     (for ([x t])
@@ -213,4 +260,4 @@ TEST
 ; "TEST 5"
 ; (display-tokens (string->tokens test5))
 "TEST 6"
-(display-tokens (string->tokens test6))
+(display-tokens (string->tokens test7))
