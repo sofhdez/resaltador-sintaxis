@@ -155,78 +155,6 @@
          [(list name)          (cons (list line col name)       (loop))]
          [_ (error)])])))
 
-(define test1 #<<TEST
-/*
-  Hello world
- */
-print("Hello, World!\n");
-
-TEST
-  )
-
-(define test2 #<<TEST
-/*
-  Show Ident and Integers
- */
-phoenix_number = 142857;
-print(phoenix_number, "\n");
-
-TEST
-  )
-
-(define test3 #<<TEST
-/*
-  All lexical tokens - not syntactically correct, but that will
-  have to wait until syntax analysis
- */
-/* Print   */  print    /* Sub     */  -
-/* Putc    */  putc     /* Lss     */  <
-/* If      */  if       /* Gtr     */  >
-/* Else    */  else     /* Leq     */  <=
-/* While   */  while    /* Geq     */  >=
-/* Lbrace  */  {        /* Eq      */  ==
-/* Rbrace  */  }        /* Neq     */  !=
-/* Lparen  */  (        /* And     */  &&
-/* Rparen  */  )        /* Or      */  ||
-/* Uminus  */  -        /* Semi    */  ;
-/* Not     */  !        /* Comma   */  ,
-/* Mul     */  *        /* Assign  */  =
-/* Div     */  /        /* Integer */  42
-/* Mod     */  %        /* String  */  "String literal"
-/* Add     */  +        /* Ident   */  variable_name
-/* character literal */  '\n'
-/* character literal */  '\\'
-/* character literal */  ' '
-TEST
-  )
-
-(define test4 #<<TEST
-/*** test printing, embedded \n and comments with lots of '*' ***/
-print(42);
-print("\nHello World\nGood Bye\nok\n");
-print("Print a slash n - \\n.\n");
-TEST
-  )
-
-(define test5 #<<TEST
-count = 1;
-while (count < 10) {
-    print("count is: ", count, "\n");
-    count = count + 1;
-}
-TEST
-  )
-
-(define test6 #<<TEST
-/* This is a comment */
-int test1 = 5;
-float test2 = 2.2;
-
-bool test3 = true;
-bool test4 = false;
-TEST
-  )
-
 (define test7 #<<TEST
 /* This is a comment */
 int test1 = 5;
@@ -249,15 +177,15 @@ TEST
       (display x) (display "\t\t"))
     (newline)))
 
-; "TEST 1"
-; (display-tokens (string->tokens test1))
-; "TEST 2"
-; (display-tokens (string->tokens test2))
-; "TEST 3"
-; (display-tokens (string->tokens test3))
-; "TEST 4"
-; (display-tokens (string->tokens test4))
-; "TEST 5"
-; (display-tokens (string->tokens test5))
-"TEST 6"
+"TEST"
 (display-tokens (string->tokens test7))
+
+; ----------------ARCHIVOS----------------
+
+; Llamamos al lexer
+(display-tokens (string->tokens (port->string (open-input-file "micodigo.txt"))))
+
+; Escribimos el archivo
+(define out (open-output-file "data.txt"))
+(display-lines (string->tokens (port->string (open-input-file "micodigo.txt"))) out)
+(close-output-port out)
