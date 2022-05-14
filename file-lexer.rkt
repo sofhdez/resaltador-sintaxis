@@ -12,22 +12,8 @@
 ; - isnumber(char) vemos...
 
 #lang racket
-(require "generadorArchivo.rkt"
-         parser-tools/lex
+(require parser-tools/lex
          (prefix-in : parser-tools/lex-sre))
-
-; -------------- Función que crea el output.txt --------------
-(define (generate file lst)
-  (if(not(null? lst))
-     (begin
-       (display (caar lst) file)
-       (display " " file)
-       (display (first (cdar lst)) file)
-       (newline file)
-       (generate file (cdr lst)))
-     (begin
-       (list)))
-  (close-output-port file))
 
 (define-lex-abbrevs
   ; --> BASICS
@@ -229,14 +215,12 @@ TEST
 "TEST 6"
 (display-tokens (string->tokens test6))
 
-(define input "micodigo.txt")
-(define fileOut (nameFileOut input))
-
-; Creamos el archivo de salida
-(define output (open-output-file fileOut))
+; ---------------------------------------------------
 
 ; Llamamos al lexer
-(display-tokens (open-input-file input))
+(display-tokens (string->tokens (port->string (open-input-file "micodigo.txt"))))
 
-; Generamos el archivo
-(generate output (display-tokens (open-input-file input)))
+; Escribimos el archivo
+(define out (open-output-file "data.txt"))
+(display-lines (string->tokens (port->string (open-input-file "micodigo.txt"))) out)
+(close-output-port out)

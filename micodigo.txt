@@ -1,8 +1,6 @@
-#include <iostream>
-using namespace std;
+/* This is a comment */
+int test1 = 5;
+float test2 = 2.2;
 
-int main()
-{
-    cout << "Welcome To CodeWithHarry";
-    return 0;
-}
+bool test3 = true;
+bool test4 = false;
