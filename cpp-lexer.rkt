@@ -155,21 +155,21 @@
          [(list name)          (cons (list line col name)       (loop))]
          [_ (error)])])))
 
-(define test7 #<<TEST
-/* This is a comment */
-int test1 = 5;
-float test2 = 2.2;
+; (define test7 #<<TEST
+; /* This is a comment */
+; int test1 = 5;
+; float test2 = 2.2;
 
-bool test3 = true;
-bool test4 = false;
-if (test 1 == 5){
-  cout << "True" << endl;
-}else{
-  cout << "False" << endl;
-}
-TEST
+; bool test3 = true;
+; bool test4 = false;
+; if (test 1 == 5){
+;   cout << "True" << endl;
+; }else{
+;   cout << "False" << endl;
+; }
+; TEST
 
-  )
+;   )
 
 (define (display-tokens ts)
   (for ([t ts])
@@ -177,8 +177,8 @@ TEST
       (display x) (display "\t\t"))
     (newline)))
 
-"TEST"
-(display-tokens (string->tokens test7))
+; "TEST"
+; (display-tokens (string->tokens test7))
 
 ; ----------------ARCHIVOS----------------
 
@@ -191,11 +191,16 @@ TEST
 ; Agregamos la hoja de estilos
 (display "<link rel='stylesheet' href='style.css'>\n\n" out)
 
-(display "<div class='block'>\n\n" out)
+(display "<div class='resaltador'>\n\n" out)
 
 ; Se añade la salida del lexer (AQUI HACER QUE SE AGREGUE LA CLASE Y LOS DIV)
 (display-lines (string->tokens (port->string (open-input-file "micodigo.txt"))) out)
 
+(display "</div>\n\n" out)
+
+; Consola
+(display "<div class='block'>\n\n" out)
+(display "Aquí va la consola\n" out)
 (display "</div>\n\n" out)
 
 ; Cerramos el archivo
