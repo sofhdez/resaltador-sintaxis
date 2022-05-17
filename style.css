@@ -15,49 +15,51 @@ symbol
 comment
 identifier
 */
+
 .block {
     background-color: black;
+    color: white;
 }
 
 .integer {
-    background-color: red;
+    color: red;
 }
 .floatnumber {
-    background-color: rgb(134, 23, 23);
+    color: rgb(134, 23, 23);
 }
 .char-literal {
-    background-color: greenyellow;
+    color: rgb(122, 184, 29);
 }
 .string-literal {
-    background-color: green;
+    color: rgb(2, 65, 2);
 }
 .datatype {
-    background-color: violet;
+    color: violet;
 }
 .bool {
-    background-color: rgb(255, 162, 0);
+    color: rgb(255, 162, 0);
 }
 .keyword {
-    background-color: rgb(78, 78, 242);
+    color: rgb(78, 78, 242);
 }
 .conditional {
-    background-color: gold;
+    color: gold;
 }
 .loop {
-    background-color: rgb(142, 22, 255);
+    color: rgb(142, 22, 255);
 }
 .operator {
-    background-color: rgb(255, 112, 60);
+    color: rgb(255, 112, 60);
 }
 .delimiter {
-    background-color: gray;
+    color: gray;
 }
 .symbol {
-    background-color: palevioletred;
+    color: rgb(162, 50, 88);
 }
 .comment {
-    background-color: wheat;
+    color: rgb(212, 158, 57);
 }
-.identifier {
-    background-color: hotpink;
+.variable {
+    color: hotpink;
 }
