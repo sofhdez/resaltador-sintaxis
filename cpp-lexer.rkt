@@ -10,6 +10,8 @@
 ; - dividir keywords en ciclos y condicionales
 ; - definir una función
 ; - isnumber(char) vemos...
+; - int main() ?
+; - Reubicar el cout cin y endl (no es keyword sino variable)
 
 #lang racket
 (require parser-tools/lex
@@ -50,16 +52,35 @@
   [string-literal (union (concatenation #\" (repetition 0 +inf.0 string-content) #\")
                          "\"\\n\"" "\"\\\\\"")]
 
+  ; --> FUNCTIONS
+  ; [function (concatenation (:: identifier)(delimiter))]
+
   ; --> KEYWORDS
-  [keyword        (union "if" "else" "while" "print" "putc")]
+  ; [keyword        (union "if" "else" "while" "print" "putc")]
+  [keyword        (union "auto" "break" "case" "const" "continue" "default" "do" "enum" "extern"
+                         "goto" "long" "register" "return" "short" "signed" "sizeof" "static" "struct"
+                         "switch" "typedef" "union" "unsigned" "void" "volatile" "mutable" "private" "true"
+                         "using" "delete" "false" "namespace" "proteced" "template" "try" "virtual" "catch"
+                         "friend" "new" "public" "this" "typeid" "class" "explicit" "inline" "operator"
+                         "throw" "typename" "cout" "cin" "endl")]
+
+  ; --> CONDITIONALS
+  [conditional    (union "if" "else" "else if")]
+
+  ; --> LOOPS
+  [loop           (union "while" "for")]
+
 
   ; --> OPERATOR
   [operator       (union "*" "/" "%" "+" "-" "-"
                          "<" "<=" ">" ">=" "==" "!="
-                         "!" "=" "&&" "||")]
+                         "!" "=" "&&" "||" "<<" ">>")]
+
+  ; --> DELIMITERS
+  [delimiter         (union "(" ")" "{" "}")]
 
   ; --> SYMBOLS
-  [symbol         (union "(" ")" "{" "}" ";" ",")]
+  [symbol         (union ";" ",")]
 
   ; --> COMMENTS
   [comment        (concatenation "/*" (complement (concatenation any-string "*/" any-string)) "*/")])
@@ -67,16 +88,22 @@
 (define operators-ht
   (hash "*"  'Op_multiply "/"  'Op_divide    "%" 'Op_mod      "+"  'Op_add           "-"  'Op_subtract
         "<"  'Op_less     "<=" 'Op_lessequal ">" 'Op_greater  ">=" 'Op_greaterequal "==" 'Op_equal
-        "!=" 'Op_notequal "!"  'Op_not       "=" 'Op_assign   "&&" 'Op_and          "||" 'Op_or))
+        "!=" 'Op_notequal "!"  'Op_not       "=" 'Op_assign   "&&" 'Op_and          "||" 'Op_or
+        "<<" 'Left_shift ">>" 'Right_shift))
+
+(define delimiter-ht
+  (hash "(" 'LeftParen  ")" 'RightParen
+        "{" 'LeftBrace  "}" 'RightBrace))
 
 (define symbols-ht
-  (hash "(" 'LeftParen  ")" 'RightParen
-        "{" 'LeftBrace  "}" 'RightBrace
-        ";" 'Semicolon  "," 'Comma))
+  (hash ";" 'Semicolon  "," 'Comma))
 
-(define (lexeme->datatype l) (string->symbol (~a "Datatype_" l))) ; to concatenate "Datatype_lexeme"
-(define (lexeme->bool l) (string->symbol (~a "Bool")))            ; 
-(define (lexeme->keyword  l) (string->symbol (~a "Keyword_" l)))  ; to concatenate "Keyword_lexeme"
+(define (lexeme->datatype l) (string->symbol (~a "Datatype" l))) ; to concatenate "Datatype_lexeme"
+(define (lexeme->bool l) (string->symbol (~a "Bool")))            ;
+(define (lexeme->keyword  l) (string->symbol (~a "Keyword")))  ; to concatenate "Keyword_lexeme"
+(define (lexeme->delimiter  l) (string->symbol (~a "Delimiter")))
+(define (lexeme->conditional  l) (string->symbol (~a "Conditional")))
+(define (lexeme->loop  l) (string->symbol (~a "Loop_")))
 (define (lexeme->operator l) (hash-ref operators-ht l))           ; return the key of the value in the hashtable
 (define (lexeme->symbol   l) (hash-ref symbols-ht   l))           ; key NAME lexer
 (define (lexeme->char     l) (match l
@@ -90,20 +117,24 @@
 (define (lex ip)
   (port-count-lines! ip)
   (define my-lexer
-    ; lexer categories (10 NO whitespace)
+    ; lexer categories (8 NO whitespace)
     (lexer-src-pos
      [integer        (token 'Integer (string->number lexeme))]
      [floatnumber    (token 'Float (string->number lexeme))]
-     [char-literal   (token 'Char lexeme)] 
+     [char-literal   (token 'Char lexeme)]
      [string-literal (token 'String  lexeme)]
      [datatype       (token (lexeme->datatype  lexeme) lexeme)]
      [bool           (token (lexeme->bool  lexeme) lexeme)]
      [keyword        (token (lexeme->keyword  lexeme) lexeme)]
+     [conditional    (token (lexeme->conditional  lexeme) lexeme)]
+     [loop           (token (lexeme->loop  lexeme) lexeme)]
      [operator       (token (lexeme->operator lexeme) lexeme)]
+     [delimiter      (token (lexeme->delimiter   lexeme) lexeme)]
      [symbol         (token (lexeme->symbol   lexeme) lexeme)]
+     ;  [function       (token (lexeme->bool  lexeme) lexeme)]
      [comment        (token 'Comment lexeme)]
      [whitespace     #f]
-     [identifier     (token 'Identifier lexeme)]
+     [identifier     (token 'Variable lexeme)]
      [(eof)          (token 'End_of_input)]))
   (define (next-token) (my-lexer ip))
   next-token)
@@ -124,76 +155,20 @@
          [(list name)          (cons (list line col name)       (loop))]
          [_ (error)])])))
 
-(define test1 #<<TEST
-/*
-  Hello world
- */
-print("Hello, World!\n");
-
-TEST
-  )
-
-(define test2 #<<TEST
-/*
-  Show Ident and Integers
- */
-phoenix_number = 142857;
-print(phoenix_number, "\n");
-
-TEST
-  )
-
-(define test3 #<<TEST
-/*
-  All lexical tokens - not syntactically correct, but that will
-  have to wait until syntax analysis
- */
-/* Print   */  print    /* Sub     */  -
-/* Putc    */  putc     /* Lss     */  <
-/* If      */  if       /* Gtr     */  >
-/* Else    */  else     /* Leq     */  <=
-/* While   */  while    /* Geq     */  >=
-/* Lbrace  */  {        /* Eq      */  ==
-/* Rbrace  */  }        /* Neq     */  !=
-/* Lparen  */  (        /* And     */  &&
-/* Rparen  */  )        /* Or      */  ||
-/* Uminus  */  -        /* Semi    */  ;
-/* Not     */  !        /* Comma   */  ,
-/* Mul     */  *        /* Assign  */  =
-/* Div     */  /        /* Integer */  42
-/* Mod     */  %        /* String  */  "String literal"
-/* Add     */  +        /* Ident   */  variable_name
-/* character literal */  '\n'
-/* character literal */  '\\'
-/* character literal */  ' '
-TEST
-  )
-
-(define test4 #<<TEST
-/*** test printing, embedded \n and comments with lots of '*' ***/
-print(42);
-print("\nHello World\nGood Bye\nok\n");
-print("Print a slash n - \\n.\n");
-TEST
-  )
-
-(define test5 #<<TEST
-count = 1;
-while (count < 10) {
-    print("count is: ", count, "\n");
-    count = count + 1;
-}
-TEST
-  )
-
-(define test6 #<<TEST
+(define test7 #<<TEST
 /* This is a comment */
 int test1 = 5;
 float test2 = 2.2;
 
 bool test3 = true;
 bool test4 = false;
+if (test 1 == 5){
+  cout << "True" << endl;
+}else{
+  cout << "False" << endl;
+}
 TEST
+
   )
 
 (define (display-tokens ts)
@@ -202,15 +177,26 @@ TEST
       (display x) (display "\t\t"))
     (newline)))
 
-; "TEST 1"
-; (display-tokens (string->tokens test1))
-; "TEST 2"
-; (display-tokens (string->tokens test2))
-; "TEST 3"
-; (display-tokens (string->tokens test3))
-; "TEST 4"
-; (display-tokens (string->tokens test4))
-; "TEST 5"
-; (display-tokens (string->tokens test5))
-"TEST 6"
-(display-tokens (string->tokens test6))
+"TEST"
+(display-tokens (string->tokens test7))
+
+; ----------------ARCHIVOS----------------
+
+; Llamamos al lexer
+(display-tokens (string->tokens (port->string (open-input-file "micodigo.txt"))))
+
+; Creamos el archivo de salida
+(define out (open-output-file "data.html"))
+
+; Agregamos la hoja de estilos
+(display "<link rel='stylesheet' href='style.css'>\n\n" out)
+
+(display "<div class='block'>\n\n" out)
+
+; Se añade la salida del lexer (AQUI HACER QUE SE AGREGUE LA CLASE Y LOS DIV)
+(display-lines (string->tokens (port->string (open-input-file "micodigo.txt"))) out)
+
+(display "</div>\n\n" out)
+
+; Cerramos el archivo
+(close-output-port out)
