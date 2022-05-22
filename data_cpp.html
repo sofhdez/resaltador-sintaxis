@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html lang='es'>
+
+<head>
+
+<meta charset='UTF-8'>
+
+<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+<title>Lexer result</title>
+
+<link rel='stylesheet' href='style.css'>
+
+<script type='text/javascript' href='style.js'> </script>
+
+</head>
+
+<body>
+
+<h1> Resaltador </h1><div class='resaltador'>
+
+(<p class='directive'> #include </p>)
+(<p class='library'> <iostream> </p>)
+(<p class='datatype'> int </p>)
+(<p class='function'> main() </p>)
+(<p class='delimiter'> { </p>)
+(<p class='streams'> cout </p>)
+(<p class='operator'> << </p>)
+(<p class='string-literal'> "Welcome To CodeWithHarry" </p>)
+(<p class='semicolon'> ; </p>)
+(<p class='keyword'> return </p>)
+(<p class='integer'> 0 </p>)
+(<p class='semicolon'> ; </p>)
+(<p class='delimiter'> } </p>)
+(</div>)
+<table>
+
+<tr> <th>Line</th> <th>Character</th> <th>Type</th> <th>Value</th> </tr>(<tr> <td> 1 </td> <td> 1 </td> <td> Directive </td> <td> #include </td> </tr>)
+(<tr> <td> 1 </td> <td> 10 </td> <td> Library </td> <td> <iostream> </td> </tr>)
+(<tr> <td> 3 </td> <td> 1 </td> <td> int </td> <td> int </td> </tr>)
+(<tr> <td> 3 </td> <td> 5 </td> <td> Function </td> <td> main() </td> </tr>)
+(<tr> <td> 3 </td> <td> 12 </td> <td> Delimiter </td> <td> { </td> </tr>)
+(<tr> <td> 4 </td> <td> 1 </td> <td> streams_cout </td> <td> cout </td> </tr>)
+(<tr> <td> 4 </td> <td> 6 </td> <td> Left_shift </td> <td> << </td> </tr>)
+(<tr> <td> 4 </td> <td> 9 </td> <td> String </td> <td> "Welcome To CodeWithHarry" </td> </tr>)
+(<tr> <td> 4 </td> <td> 35 </td> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> 5 </td> <td> 1 </td> <td> Keyword </td> <td> return </td> </tr>)
+(<tr> <td> 5 </td> <td> 8 </td> <td> Integer </td> <td> 0 </td> </tr>)
+(<tr> <td> 5 </td> <td> 9 </td> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> 6 </td> <td> 1 </td> <td> Delimiter </td> <td> } </td> </tr>)
+(<br>)
+</table>
+
+</div>
+
+<h1> Consola </h1><br>
+
+</body> 
+
+<script type='text/javascript'>  
+
+
+    var el = document.getElementsByClassName('error'); 
+
+
+    console.log(el) 
+
+
+    console.log(el.length) 
+
+
+    for (var i = 0; i < el.length; i++) { 
+
+
+        var currentEl = el[i]; 
+
+
+        currentEl.style.bottom = -(i * 2) + 'rem'; 
+
+
+        console.log(currentEl) 
+
+
+    } 
+
+
+    var body_element = document.querySelector('body'); 
+
+
+    body_element.innerHTML = body_element.innerHTML.replaceAll('(', ''); 
+
+
+    body_element.innerHTML = body_element.innerHTML.replaceAll(')', ''); 
+
+
+</script> 
+
+</html>
+
