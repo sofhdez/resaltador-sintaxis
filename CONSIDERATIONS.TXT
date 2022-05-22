@@ -1,0 +1,4 @@
+
+21-86 reglas de sintaxis
+117-140 se clasifican
+197 lo imprime en html

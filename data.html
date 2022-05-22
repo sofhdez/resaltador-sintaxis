@@ -1,79 +1,239 @@
+<!DOCTYPE html>
+
+<html lang='es'>
+
+<head>
+
+<meta charset='UTF-8'>
+
+<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+<title>Lexer result</title>
+
 <link rel='stylesheet' href='style.css'>
+
+<script type='text/javascript' href='style.js'> </script>
+
+</head>
+
+<body>
 
 <div class='resaltador'>
 
-(1 1 Comment /* This is a comment */)
-(2 1 Datatypeint int)
-(2 5 Variable test1)
-(2 11 Op_assign =)
-(2 13 Integer 5)
-(2 14 Semicolon ;)
-(3 1 Datatypefloat float)
-(3 7 Variable test2)
-(3 13 Op_assign =)
-(3 15 Float 2.2)
-(3 18 Semicolon ;)
-(5 1 Datatypebool bool)
-(5 6 Variable test3)
-(5 12 Op_assign =)
-(5 14 Bool true)
-(5 18 Semicolon ;)
-(6 1 Datatypebool bool)
-(6 6 Variable test4)
-(6 12 Op_assign =)
-(6 14 Bool false)
-(6 19 Semicolon ;)
-(7 1 Conditional if)
-(7 4 Delimiter ()
-(7 5 Variable test)
-(7 10 Integer 1)
-(7 12 Op_equal ==)
-(7 15 Integer 5)
-(7 16 Delimiter ))
-(7 17 Delimiter {)
-(8 3 Keyword cout)
-(8 8 Left_shift <<)
-(8 11 String "True")
-(8 18 Left_shift <<)
-(8 21 Keyword endl)
-(8 25 Semicolon ;)
-(9 1 Delimiter })
-(9 2 Conditional else)
-(9 6 Delimiter {)
-(10 3 Keyword cout)
-(10 8 Left_shift <<)
-(10 11 String "False")
-(10 19 Left_shift <<)
-(10 22 Keyword endl)
-(10 26 Semicolon ;)
-(11 1 Delimiter })
-(13 1 Loop_ while)
-(13 7 Delimiter ()
-(13 8 Variable count)
-(13 14 Op_less <)
-(13 16 Integer 10)
-(13 18 Delimiter ))
-(13 20 Delimiter {)
-(14 5 Keyword cout)
-(14 10 Left_shift <<)
-(14 13 String "count is: ")
-(14 26 Left_shift <<)
-(14 29 Variable count)
-(14 35 Left_shift <<)
-(14 38 Keyword endl)
-(14 42 Semicolon ;)
-(15 5 Variable count)
-(15 11 Op_assign =)
-(15 13 Variable count)
-(15 19 Op_add +)
-(15 21 Integer 1)
-(15 22 Semicolon ;)
-(16 1 Delimiter })
-(16 2 End_of_input)
+(<p class='comment'> Comment /* This is a comment */ 1 1 </p>)
+(<p class='datatype'>Datatypeint int 2 1 </p>)
+(<p class='variable'> Variable test1 2 5 </p>)
+(<p class='operator'> Op_assign = 2 11 </p>)
+(<p class='integer'> Integer 5 2 13 </p>)
+(Semicolon ; 2 14 </p>)
+(<p class='datatype'>Datatypefloat float 3 1 </p>)
+(<p class='variable'> Variable test2 3 7 </p>)
+(<p class='operator'> Op_assign = 3 13 </p>)
+(<p class='floatnumber'> Float 2.2 3 15 </p>)
+(Semicolon ; 3 18 </p>)
+(<p class='error'> Error # 5 2 </p>)
+(Semicolon ; 5 3 </p>)
+(<p class='error'> Error $ 6 2 </p>)
+(Semicolon ; 6 3 </p>)
+(<p class='error'> Error ? 7 2 </p>)
+(Semicolon ; 7 3 </p>)
+(<p class='error'> Error ¿ 8 2 </p>)
+(Semicolon ; 8 3 </p>)
+(<p class='error'> Error ° 9 2 </p>)
+(Semicolon ; 9 3 </p>)
+(<p class='datatype'>Datatypebool bool 11 1 </p>)
+(<p class='variable'> Variable test3 11 6 </p>)
+(<p class='operator'> Op_assign = 11 12 </p>)
+(<p class='bool'> Boolean true 11 14 </p>)
+(Semicolon ; 11 18 </p>)
+(<p class='datatype'>Datatypebool bool 12 1 </p>)
+(<p class='variable'> Variable test4 12 6 </p>)
+(<p class='operator'> Op_assign = 12 12 </p>)
+(<p class='bool'> Boolean false 12 14 </p>)
+(Semicolon ; 12 19 </p>)
+(<p class='conditional'> Conditional if 13 1 </p>)
+(<p class='delimiter'> Delimiter ( 13 4 </p>)
+(<p class='variable'> Variable test 13 5 </p>)
+(<p class='integer'> Integer 1 13 10 </p>)
+(<p class='operator'> Op_assign == 13 12 </p>)
+(<p class='integer'> Integer 5 13 15 </p>)
+(<p class='delimiter'> Delimiter ) 13 16 </p>)
+(<p class='delimiter'> Delimiter { 13 17 </p>)
+(<p class='keyword'> Keyword cout 14 3 </p>)
+(<p class='operator'> Op_assign << 14 8 </p>)
+(<p class='string-literal'> String "True" 14 11 </p>)
+(<p class='operator'> Op_assign << 14 18 </p>)
+(<p class='keyword'> Keyword endl 14 21 </p>)
+(Semicolon ; 14 25 </p>)
+(<p class='delimiter'> Delimiter } 15 1 </p>)
+(<p class='conditional'> Conditional else 15 2 </p>)
+(<p class='delimiter'> Delimiter { 15 6 </p>)
+(<p class='keyword'> Keyword cout 16 3 </p>)
+(<p class='operator'> Op_assign << 16 8 </p>)
+(<p class='string-literal'> String "False" 16 11 </p>)
+(<p class='operator'> Op_assign << 16 19 </p>)
+(<p class='keyword'> Keyword endl 16 22 </p>)
+(Semicolon ; 16 26 </p>)
+(<p class='delimiter'> Delimiter } 17 1 </p>)
+(<p class='loop'> Loop while 19 1 </p>)
+(<p class='delimiter'> Delimiter ( 19 7 </p>)
+(<p class='variable'> Variable count 19 8 </p>)
+(<p class='operator'> Op_assign < 19 14 </p>)
+(<p class='integer'> Integer 10 19 16 </p>)
+(<p class='delimiter'> Delimiter ) 19 18 </p>)
+(<p class='delimiter'> Delimiter { 19 20 </p>)
+(<p class='keyword'> Keyword cout 20 5 </p>)
+(<p class='operator'> Op_assign << 20 10 </p>)
+(<p class='string-literal'> String "count is: " 20 13 </p>)
+(<p class='operator'> Op_assign << 20 26 </p>)
+(<p class='variable'> Variable count 20 29 </p>)
+(<p class='operator'> Op_assign << 20 35 </p>)
+(<p class='keyword'> Keyword endl 20 38 </p>)
+(Semicolon ; 20 42 </p>)
+(<p class='variable'> Variable count 21 5 </p>)
+(<p class='operator'> Op_assign = 21 11 </p>)
+(<p class='variable'> Variable count 21 13 </p>)
+(<p class='operator'> Op_assign + 21 19 </p>)
+(<p class='integer'> Integer 1 21 21 </p>)
+(Semicolon ; 21 22 </p>)
+(<p class='delimiter'> Delimiter } 22 1 </p>)
+(22 2 End_of_input)
+<table>
+
+<tr> <th>Type</th> <th>Value</th> </tr>(<tr> <td> Comment </td> <td> /* This is a comment */ </td> </tr>)
+(<tr> <td> int </td> <td> int </td> </tr>)
+(<tr> <td> Variable </td> <td> test1 </td> </tr>)
+(<tr> <td> Op_assign </td> <td> = </td> </tr>)
+(<tr> <td> Integer </td> <td> 5 </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> float </td> <td> float </td> </tr>)
+(<tr> <td> Variable </td> <td> test2 </td> </tr>)
+(<tr> <td> Op_assign </td> <td> = </td> </tr>)
+(<tr> <td> Float </td> <td> 2.2 </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Error </td> <td> # </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Error </td> <td> $ </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Error </td> <td> ? </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Error </td> <td> ¿ </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Error </td> <td> ° </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> bool </td> <td> bool </td> </tr>)
+(<tr> <td> Variable </td> <td> test3 </td> </tr>)
+(<tr> <td> Op_assign </td> <td> = </td> </tr>)
+(<tr> <td> Bool </td> <td> true </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> bool </td> <td> bool </td> </tr>)
+(<tr> <td> Variable </td> <td> test4 </td> </tr>)
+(<tr> <td> Op_assign </td> <td> = </td> </tr>)
+(<tr> <td> Bool </td> <td> false </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Conditional </td> <td> if </td> </tr>)
+(<tr> <td> Delimiter </td> <td> ( </td> </tr>)
+(<tr> <td> Variable </td> <td> test </td> </tr>)
+(<tr> <td> Integer </td> <td> 1 </td> </tr>)
+(<tr> <td> Op_equal </td> <td> == </td> </tr>)
+(<tr> <td> Integer </td> <td> 5 </td> </tr>)
+(<tr> <td> Delimiter </td> <td> ) </td> </tr>)
+(<tr> <td> Delimiter </td> <td> { </td> </tr>)
+(<tr> <td> Keyword </td> <td> cout </td> </tr>)
+(<tr> <td> Left_shift </td> <td> << </td> </tr>)
+(<tr> <td> String </td> <td> "True" </td> </tr>)
+(<tr> <td> Left_shift </td> <td> << </td> </tr>)
+(<tr> <td> Keyword </td> <td> endl </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Delimiter </td> <td> } </td> </tr>)
+(<tr> <td> Conditional </td> <td> else </td> </tr>)
+(<tr> <td> Delimiter </td> <td> { </td> </tr>)
+(<tr> <td> Keyword </td> <td> cout </td> </tr>)
+(<tr> <td> Left_shift </td> <td> << </td> </tr>)
+(<tr> <td> String </td> <td> "False" </td> </tr>)
+(<tr> <td> Left_shift </td> <td> << </td> </tr>)
+(<tr> <td> Keyword </td> <td> endl </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Delimiter </td> <td> } </td> </tr>)
+(<tr> <td> Loop_ </td> <td> while </td> </tr>)
+(<tr> <td> Delimiter </td> <td> ( </td> </tr>)
+(<tr> <td> Variable </td> <td> count </td> </tr>)
+(<tr> <td> Op_less </td> <td> < </td> </tr>)
+(<tr> <td> Integer </td> <td> 10 </td> </tr>)
+(<tr> <td> Delimiter </td> <td> ) </td> </tr>)
+(<tr> <td> Delimiter </td> <td> { </td> </tr>)
+(<tr> <td> Keyword </td> <td> cout </td> </tr>)
+(<tr> <td> Left_shift </td> <td> << </td> </tr>)
+(<tr> <td> String </td> <td> "count is: " </td> </tr>)
+(<tr> <td> Left_shift </td> <td> << </td> </tr>)
+(<tr> <td> Variable </td> <td> count </td> </tr>)
+(<tr> <td> Left_shift </td> <td> << </td> </tr>)
+(<tr> <td> Keyword </td> <td> endl </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Variable </td> <td> count </td> </tr>)
+(<tr> <td> Op_assign </td> <td> = </td> </tr>)
+(<tr> <td> Variable </td> <td> count </td> </tr>)
+(<tr> <td> Op_add </td> <td> + </td> </tr>)
+(<tr> <td> Integer </td> <td> 1 </td> </tr>)
+(<tr> <td> Semicolon </td> <td> ; </td> </tr>)
+(<tr> <td> Delimiter </td> <td> } </td> </tr>)
+(22 2 End_of_input)
+</table>
+
 </div>
 
-<div class='block'>
+<br>
 
-Aquí va la consola
-</div>
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+</body> 
+
+<script type='text/javascript'>  
+
+
+    var el = document.getElementsByClassName('error'); 
+
+
+    console.log(el) 
+
+
+    console.log(el.length) 
+
+
+
+    for (var i = 0; i < el.length; i++) { 
+
+
+        var currentEl = el[i]; 
+
+
+        currentEl.style.bottom = -(i * 2) + 'rem'; 
+
+
+        console.log(currentEl) 
+
+
+    } 
+
+
+    var body_element = document.querySelector('body'); 
+
+
+    body_element.innerHTML = body_element.innerHTML.replaceAll('(', ''); 
+
+
+    body_element.innerHTML = body_element.innerHTML.replaceAll(')', ''); 
+
+
+</script> 
+
+</html>
 

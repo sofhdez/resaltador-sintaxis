@@ -98,7 +98,7 @@
 (define symbols-ht
   (hash ";" 'Semicolon  "," 'Comma))
 
-(define (lexeme->datatype l) (string->symbol (~a "Datatype" l))) ; to concatenate "Datatype_lexeme"
+(define (lexeme->datatype l) (string->symbol (~a "" l))) ; to concatenate "Datatype_lexeme"
 (define (lexeme->bool l) (string->symbol (~a "Bool")))            ;
 (define (lexeme->keyword  l) (string->symbol (~a "Keyword")))  ; to concatenate "Keyword_lexeme"
 (define (lexeme->delimiter  l) (string->symbol (~a "Delimiter")))
@@ -135,12 +135,45 @@
      [comment        (token 'Comment lexeme)]
      [whitespace     #f]
      [identifier     (token 'Variable lexeme)]
-     [(eof)          (token 'End_of_input)]))
+     [(eof)          (token 'End_of_input)]
+     [any-char       (token 'Error lexeme)]))
+  (define (next-token) (my-lexer ip))
+  next-token)
+
+(define (htmllex ip)
+  (port-count-lines! ip)
+  (define my-lexer
+    ; lexer categories (8 NO whitespace)
+    (lexer-src-pos
+     [integer        (token "<p class='integer'> Integer" (string->number lexeme))]
+     [floatnumber    (token "<p class='floatnumber'> Float" (string->number lexeme))]
+     [char-literal   (token "<p class='char-literal'> Char" lexeme)]
+     [string-literal (token "<p class='string-literal'> String"  lexeme)]
+     [datatype       (token (lexeme->datatype  (~a "<p class='datatype'>Datatype" lexeme )) lexeme)]
+     [bool           (token "<p class='bool'> Boolean" lexeme)]
+     [keyword        (token "<p class='keyword'> Keyword" lexeme)]
+     [conditional    (token "<p class='conditional'> Conditional" lexeme)]
+     [loop           (token "<p class='loop'> Loop" lexeme)]
+     [operator       (token "<p class='operator'> Op_assign" lexeme)]
+     [delimiter      (token "<p class='delimiter'> Delimiter" lexeme)]
+     [symbol         (token (lexeme->symbol   lexeme) lexeme)]
+     ;  [function       (token (lexeme->bool  lexeme) lexeme)]
+     [comment        (token "<p class='comment'> Comment" lexeme)]
+     [whitespace     #f]
+     [identifier     (token "<p class='variable'> Variable" lexeme)]
+     [(eof)          (token 'End_of_input)]
+     [any-char       (token "<p class='error'> Error" lexeme)]))
   (define (next-token) (my-lexer ip))
   next-token)
 
 (define (string->tokens s)
   (port->tokens (open-input-string s)))
+
+(define (string->tokenshtml s)
+  (port->tokenshtml (open-input-string s)))
+
+(define (string->tokenstable s)
+  (port->tokenstable (open-input-string s)))
 
 (define (port->tokens ip)
   (define next-token (lex ip))
@@ -152,6 +185,32 @@
          [#f                   (loop)] ; skip whitespace
          [(list 'End_of_input) (list (list line col 'End_of_input))]
          [(list name value)    (cons (list line col name value) (loop))]
+         [(list name)          (cons (list line col name)       (loop))]
+         [_ (error)])])))
+
+(define (port->tokenstable ip)
+  (define next-token (lex ip))
+  (let loop ()
+    (match (next-token)
+      [(position-token t (position offset line col) _)
+       (set! col (+ col 1)) ; output is 1-based
+       (match t
+         [#f                   (loop)] ; skip whitespace
+         [(list 'End_of_input) (list (list line col 'End_of_input))]
+         [(list name value)    (cons (list "<tr>" "<td>" name "</td>" "<td>" value "</td>" "</tr>") (loop))]
+         [(list name)          (cons (list line col name)       (loop))]
+         [_ (error)])])))
+
+(define (port->tokenshtml ip)
+  (define next-token (htmllex ip))
+  (let loop ()
+    (match (next-token)
+      [(position-token t (position offset line col) _)
+       (set! col (+ col 1)) ; output is 1-based
+       (match t
+         [#f                   (loop)] ; skip whitespace
+         [(list 'End_of_input) (list (list line col 'End_of_input))]
+         [(list name value)    (cons (list name value line col "</p>") (loop))]
          [(list name)          (cons (list line col name)       (loop))]
          [_ (error)])])))
 
@@ -188,20 +247,69 @@
 ; Creamos el archivo de salida
 (define out (open-output-file "data.html"))
 
-; Agregamos la hoja de estilos
+
+(display "<!DOCTYPE html>\n\n" out)
+
+(display "<html lang='es'>\n\n" out)
+
+
+(display "<head>\n\n" out)
+
+
+(display "<meta charset='UTF-8'>\n\n" out)
+(display "<meta http-equiv='X-UA-Compatible' content='IE=edge'>\n\n" out)
+(display "<meta name='viewport' content='width=device-width, initial-scale=1.0'>\n\n" out)
+(display "<title>Lexer result</title>\n\n" out)
+
 (display "<link rel='stylesheet' href='style.css'>\n\n" out)
+
+(display "<script type='text/javascript' href='style.js'> </script>\n\n" out)
+
+(display "</head>\n\n" out)
+
+(display "<body>\n\n" out)
+
 
 (display "<div class='resaltador'>\n\n" out)
 
 ; Se añade la salida del lexer (AQUI HACER QUE SE AGREGUE LA CLASE Y LOS DIV)
-(display-lines (string->tokens (port->string (open-input-file "micodigo.txt"))) out)
+(display-lines (string->tokenshtml (port->string (open-input-file "micodigo.txt"))) out)
+
+(display "<table>\n\n" out)
+
+(display "<tr> <th>Type</th> <th>Value</th> </tr>" out)
+
+(display-lines (string->tokenstable (port->string (open-input-file "micodigo.txt"))) out)
+
+(display "</table>\n\n" out)
 
 (display "</div>\n\n" out)
+(display "<br>\n\n" out)
+(display "<br>\n\n" out)
+(display "<br>\n\n" out)
+(display "<br>\n\n" out)
+(display "<br>\n\n" out)
 
-; Consola
-(display "<div class='block'>\n\n" out)
-(display "Aquí va la consola\n" out)
-(display "</div>\n\n" out)
+
+(display "</body> \n\n" out)
+
+(display "<script type='text/javascript'>  \n\n
+    var el = document.getElementsByClassName('error'); \n\n
+    console.log(el) \n\n
+    console.log(el.length) \n\n
+
+    for (var i = 0; i < el.length; i++) { \n\n
+        var currentEl = el[i]; \n\n
+        currentEl.style.bottom = -(i * 2) + 'rem'; \n\n
+        console.log(currentEl) \n\n
+    } \n\n
+    var body_element = document.querySelector('body'); \n\n
+    body_element.innerHTML = body_element.innerHTML.replaceAll('(', ''); \n\n
+    body_element.innerHTML = body_element.innerHTML.replaceAll(')', ''); \n\n
+</script> \n\n" out)
+
+(display "</html>\n\n" out)
+
 
 ; Cerramos el archivo
 (close-output-port out)
