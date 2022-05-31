@@ -4,7 +4,7 @@
 ; Alfonso Pineda Castillo A01660394
 ; Gael Eduardo Pérez Gómez A01753336
 
-#lang racket
+#lang racket/gui
 (require parser-tools/lex
          (prefix-in : parser-tools/lex-sre))
 
@@ -241,15 +241,24 @@
     (for ([x t])
       (display x) (display "\t\t"))
     (newline)))
+;--------------GUI----------------
 
-; ----------------FILES----------------
+;; Make a frame by instantiating the frame% class
+(define frame (new frame% [label "Example"]))
 
-;(define inFile "micodigo_bien.cpp")  ; Correct file
-(define inFile "micodigo.cpp")  ; Incorrect file
+;; Make a button in the frame
+(new button% [parent frame]
+             [label "Select File"]
+             ;; Callback procedure for a button click:
+             [callback
+              (lambda (button event)
+                (define inFile (get-file))
+                (port->string (open-input-file inFile))
+                (display inFile)
 (define outFile "out.html")
 
 ; Call the lexer
-(display-tokens (string->tokens (port->string (open-input-file inFile))))
+;(display-tokens (string->tokens (port->string (open-input-file inFile))))
 
 ; Output file
 (define out (open-output-file outFile))
@@ -317,3 +326,13 @@
 
 ; Close the file
 (close-output-port out)
+                
+                )])
+
+;; Show the frame by calling its show method
+(send frame show #t)
+
+; ----------------FILES----------------
+
+;(define inFile "micodigo_bien.cpp")  ; Correct file
+;(define inFile "micodigo.cpp")  ; Incorrect file
