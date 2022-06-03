@@ -4,10 +4,6 @@
 ; Alfonso Pineda Castillo A01660394
 ; Gael Eduardo Pérez Gómez A01753336
 
-; PARA CREAR EL .exe EN DR RACKET Racket -> Create Executable
-;                 distribution archive
-;                 debe de estar en la misma carpeta que los archivos a leer
-
 #lang racket
 (require parser-tools/lex
          (prefix-in : parser-tools/lex-sre))
@@ -248,12 +244,32 @@
 
 ; ----------------FILES----------------
 
-;(define inFile "micodigo_bien.cpp")  ; Correct file
+; (define inFile "micodigo_bien.cpp")  ; Correct file
 (define inFile "micodigo.cpp")  ; Incorrect file
+(define inFile2 "micodigo_bien.cpp")  ; Incorrect file
 (define outFile "out.html")
 
-; Call the lexer
-(display-tokens (string->tokens (port->string (open-input-file inFile))))
+; ; Call the lexer
+; (display-tokens (string->tokens (port->string (open-input-file inFile))))
+
+; (string->tokenshtml (port->string (open-input-file inFile)))
+
+; ######## PRUEBA PARA IMPRIMIR EN CONSOLA ########
+
+; (define (printLexer fileIn)
+;   (display-tokens (string->tokenshtml (port->string (open-input-file fileIn))))
+;   )
+
+; (let ([f (future (lambda () (printLexer inFile)))]
+;       [f2 (future (lambda () (printLexer inFile2)))])
+;       (touch f)
+;       (touch f2))
+
+; #####################################################
+
+(define (printLexer fileIn)
+  (display-lines (string->tokenshtml (port->string (open-input-file inFile))) out)
+  )
 
 ; Output file
 (define out (open-output-file outFile))
@@ -284,17 +300,11 @@
 
 (display "<div class='resaltador'>\n\n" out)
 
-(display-lines (string->tokenshtml (port->string (open-input-file inFile))) out)
-
-(display "<h1> Table </h1>" out)
-
-(display "<table>\n\n" out)
-
-(display "<tr> <th>Line</th> <th>Character</th> <th>Type</th> <th>Value</th> </tr>" out)
-
-(display-lines (string->tokenstable (port->string (open-input-file inFile))) out)
-
-(display "</table>\n\n" out)
+; (display-lines (string->tokenshtml (port->string (open-input-file inFile))) out)
+(let ([f (future (lambda () (printLexer inFile)))]
+      [f2 (future (lambda () (printLexer inFile2)))])
+  (touch f)
+  (touch f2))
 
 (display "</div>\n\n" out)
 (display "<h1> Console </h1>" out)
