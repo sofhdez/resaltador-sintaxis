@@ -268,7 +268,7 @@
 ; #####################################################
 
 (define (printLexer fileIn)
-  (display-lines (string->tokenshtml (port->string (open-input-file inFile))) out)
+  (display-lines (string->tokenshtml (port->string (open-input-file fileIn))) out)
   )
 
 ; Output file
