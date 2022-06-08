@@ -4,13 +4,9 @@
 ; Alfonso Pineda Castillo A01660394
 ; Gael Eduardo Pérez Gómez A01753336
 
-; PARA CREAR EL .exe EN DR RACKET Racket -> Create Executable
-;                 distribution archive
-;                 debe de estar en la misma carpeta que los archivos a leer
-
-#lang racket
+#lang racket/gui
 (require parser-tools/lex
-         (prefix-in : parser-tools/lex-sre))
+        (prefix-in : parser-tools/lex-sre))
 
 (define-lex-abbrevs
   ; --> BASICS
@@ -36,16 +32,16 @@
   [bool        (union "true" "false")]
 
   ; --> VARIALES
-  [identifier     (concatenation (union letter underscore)
-                                 (repetition 0 +inf.0 (union letter digit underscore)))]
+  [identifier     (concatenation  (union letter underscore)
+                                  (repetition 0 +inf.0 (union letter digit underscore)))]
 
   ; --> STRINGS
   [char-content   (char-complement (char-set "'\n"))]
   [char-literal   (union (concatenation #\' char-content #\')
-                         "'\\n'" "'\\\\'")]
+                        "'\\n'" "'\\\\'")]
   [string-content (union (char-complement (char-set "\"\n")))]
   [string-literal (union (concatenation #\" (repetition 0 +inf.0 string-content) #\")
-                         "\"\\n\"" "\"\\\\\"")]
+                        "\"\\n\"" "\"\\\\\"")]
 
 ; --> FUNCTIONS
   [function (concatenation identifier (concatenation "("(complement (concatenation any-string "(" any-string)) ")"))]
@@ -75,9 +71,9 @@
 
 
   ; --> OPERATOR
-  [operator       (union "*" "/" "%" "+" "-" "-"
-                         "<" "<=" ">" ">=" "==" "!="
-                         "!" "=" "&&" "||" "<<" ">>")]
+  [operator       (union  "*" "/" "%" "+" "-" "-"
+                          "<" "<=" ">" ">=" "==" "!="
+                          "!" "=" "&&" "||" "<<" ">>")]
 
     ; --> MISC OPERATORS
   [misc (union "sizeOf()" "&" "?:" "->")]
@@ -121,9 +117,9 @@
 (define (lexeme->semicolon   l) (string->symbol (~a "Semicolon")))  
 (define (lexeme->comma l) (string->symbol (~a "Comma")))  
 (define (lexeme->char     l) (match l
-                               ["'\\\\'" #\\]
-                               ["'\\n'"  #\newline]
-                               [_       (string-ref l 1)]))
+                              ["'\\\\'" #\\]
+                              ["'\\n'"  #\newline]
+                              [_       (string-ref l 1)]))
 
 (define (token name [value #f])
   (cons name (if value (list value) '())))
@@ -133,29 +129,29 @@
   (define my-lexer
     ; lexer categories
     (lexer-src-pos
-     [integer        (token 'Integer (string->number lexeme))]
-     [floatnumber    (token 'Float (string->number lexeme))]
-     [char-literal   (token 'Char lexeme)] 
-     [string-literal (token 'String  lexeme)]
-     [datatype       (token (lexeme->datatype  lexeme) lexeme)]
-     [bool           (token (lexeme->bool  lexeme) lexeme)]
-     [library        (token (lexeme->library  lexeme) lexeme)]
-     [directive      (token (lexeme->directive  lexeme) lexeme)]
-     [streams        (token (lexeme->streams  lexeme) lexeme)]
-     [keyword        (token (lexeme->keyword  lexeme) lexeme)]
-     [conditional    (token (lexeme->conditional  lexeme) lexeme)]
-     [loop           (token (lexeme->loop  lexeme) lexeme)]
-     [operator       (token (lexeme->operator lexeme) lexeme)]
-     [misc           (token (lexeme->misc lexeme) lexeme)]
-     [delimiter      (token (lexeme->delimiter   lexeme) lexeme)]
-     [semicolon      (token (lexeme->semicolon  lexeme) lexeme)]
-     [comma          (token (lexeme->comma  lexeme) lexeme)]
-     [function       (token 'Function lexeme)]
-     [comment        (token 'Comment lexeme)]
-     [whitespace     #f]
-     [identifier     (token 'Identifier lexeme)]
-     [(eof)          (token 'End_of_input)]
-     [any-char       (token 'Error lexeme)]))
+      [integer        (token 'Integer (string->number lexeme))]
+      [floatnumber    (token 'Float (string->number lexeme))]
+      [char-literal   (token 'Char lexeme)] 
+      [string-literal (token 'String  lexeme)]
+      [datatype       (token (lexeme->datatype  lexeme) lexeme)]
+      [bool           (token (lexeme->bool  lexeme) lexeme)]
+      [library        (token (lexeme->library  lexeme) lexeme)]
+      [directive      (token (lexeme->directive  lexeme) lexeme)]
+      [streams        (token (lexeme->streams  lexeme) lexeme)]
+      [keyword        (token (lexeme->keyword  lexeme) lexeme)]
+      [conditional    (token (lexeme->conditional  lexeme) lexeme)]
+      [loop           (token (lexeme->loop  lexeme) lexeme)]
+      [operator       (token (lexeme->operator lexeme) lexeme)]
+      [misc           (token (lexeme->misc lexeme) lexeme)]
+      [delimiter      (token (lexeme->delimiter   lexeme) lexeme)]
+      [semicolon      (token (lexeme->semicolon  lexeme) lexeme)]
+      [comma          (token (lexeme->comma  lexeme) lexeme)]
+      [function       (token 'Function lexeme)]
+      [comment        (token 'Comment lexeme)]
+      [whitespace     #f]
+      [identifier     (token 'Identifier lexeme)]
+      [(eof)          (token 'End_of_input)]
+      [any-char       (token 'Error lexeme)]))
   (define (next-token) (my-lexer ip))
   next-token)
 
@@ -163,31 +159,31 @@
   (port-count-lines! ip)
   (define my-lexer
     (lexer-src-pos
-     [integer        (token "<p class='integer'>" (string->number lexeme))]
-     [floatnumber    (token "<p class='floatnumber'>" (string->number lexeme))]
-     [char-literal   (token "<p class='char-literal'>" lexeme)]
-     [string-literal (token "<p class='string-literal'>"  lexeme)]
-     [datatype       (token (lexeme->datatype  (~a "<p class='datatype'>")) lexeme)]
-     [bool           (token "<p class='bool'>" lexeme)]
-     [library        (token "<p class='library'>" lexeme)] 
-     [directive      (token "<p class='directive'>" lexeme)]
-     [streams        (token "<p class='streams'>" lexeme)]
-     [keyword        (token "<p class='keyword'>" lexeme)]
-     [conditional    (token "<p class='conditional'>" lexeme)]
-     [loop           (token "<p class='loop'>" lexeme)]
-     [operator       (token "<p class='operator'>" lexeme)]
-     [misc           (token "<p class='misc'>" lexeme)]
-     [delimiter      (token "<p class='delimiter'>" lexeme)]
+      [integer        (token "<p class='integer'>" (string->number lexeme))]
+      [floatnumber    (token "<p class='floatnumber'>" (string->number lexeme))]
+      [char-literal   (token "<p class='char-literal'>" lexeme)]
+      [string-literal (token "<p class='string-literal'>"  lexeme)]
+      [datatype       (token (lexeme->datatype  (~a "<p class='datatype'>")) lexeme)]
+      [bool           (token "<p class='bool'>" lexeme)]
+      [library        (token "<p class='library'>" lexeme)] 
+      [directive      (token "<p class='directive'>" lexeme)]
+      [streams        (token "<p class='streams'>" lexeme)]
+      [keyword        (token "<p class='keyword'>" lexeme)]
+      [conditional    (token "<p class='conditional'>" lexeme)]
+      [loop           (token "<p class='loop'>" lexeme)]
+      [operator       (token "<p class='operator'>" lexeme)]
+      [misc           (token "<p class='misc'>" lexeme)]
+      [delimiter      (token "<p class='delimiter'>" lexeme)]
     ;  [symbol         (token (lexeme->symbol   lexeme) lexeme)]
-     [semicolon      (token "<p class='semicolon'>" lexeme)]
-     [comma          (token "<p class='comma'>" lexeme)]
-     [function       (token "<p class='function'>" lexeme)]
-     [comment        (token "<p class='comment'>" lexeme)]
-     [whitespace     #f]
-     [identifier     (token "<p class='variable'>" lexeme)]
-     [(eof)          (token 'End_of_input)]
-     ; [any-char       (token "<p class='error'>" lexeme)]))
-     [any-char       (token 'Error lexeme)]))
+      [semicolon      (token "<p class='semicolon'>" lexeme)]
+      [comma          (token "<p class='comma'>" lexeme)]
+      [function       (token "<p class='function'>" lexeme)]
+      [comment        (token "<p class='comment'>" lexeme)]
+      [whitespace     #f]
+      [identifier     (token "<p class='variable'>" lexeme)]
+      [(eof)          (token 'End_of_input)]
+      ; [any-char       (token "<p class='error'>" lexeme)]))
+      [any-char       (token 'Error lexeme)]))
   (define (next-token) (my-lexer ip))
   next-token)
 
@@ -205,55 +201,93 @@
   (let loop ()
     (match (next-token)
       [(position-token t (position offset line col) _)
-       (set! col (+ col 1)) ; output is 1-based
-       (match t
-         [#f                   (loop)] ; skip whitespace
-         [(list 'End_of_input) (list (list line col 'End_of_input))]
-         [(list name value)    (cons (list line col name value) (loop))]
-         [(list name)          (cons (list line col name)       (loop))]
-         [_ (error)])])))
+        (set! col (+ col 1)) ; output is 1-based
+        (match t
+          [#f                   (loop)] ; skip whitespace
+          [(list 'End_of_input) (list (list line col 'End_of_input))]
+          [(list name value)    (cons (list line col name value) (loop))]
+          [(list name)          (cons (list line col name)       (loop))]
+          [_ (error)])])))
 
 (define (port->tokenstable ip)
   (define next-token (lex ip))
   (let loop ()
     (match (next-token)
       [(position-token t (position offset line col) _)
-       (set! col (+ col 1)) ; output is 1-based
-       (match t
-         [#f                   (loop)] ; skip whitespace
-         [(list 'End_of_input) (list (list "<br>"))]
-         [(list name value)    (cons (list "<tr>" "<td>" line "</td>" "<td>" col "</td>" "<td>" name "</td>" "<td>" value "</td>" "</tr>") (loop))]
-         [(list name)          (cons (list line col name)       (loop))]
-         [_ (cons (list error line col))])])))
+        (set! col (+ col 1)) ; output is 1-based
+        (match t
+          [#f                   (loop)] ; skip whitespace
+          [(list 'End_of_input) (list (list "<br>"))]
+          [(list name value)    (cons (list "<tr>" "<td>" line "</td>" "<td>" col "</td>" "<td>" name "</td>" "<td>" value "</td>" "</tr>") (loop))]
+          [(list name)          (cons (list line col name)       (loop))]
+          [_ (cons (list error line col))])])))
 
 (define (port->tokenshtml ip)
   (define next-token (htmllex ip))
   (let loop ()
     (match (next-token)
       [(position-token t (position offset line col) _)
-       (set! col (+ col 1)) ; output is 1-based
-       (match t
-         [#f                   (loop)] ; skip whitespace
-         [(list 'End_of_input) (list (list "</div>"))]
-         [(list 'Error name)   (list (list "<p class='error'>" line "\t"col "\t"name"</p>") (loop))]
-         [(list name value)    (cons (list name value "</p>") (loop))]
-         [(list name)          (cons (list line col name)       (loop))]
-         [_ (cons (list error line col))])])))
+      (set! col (+ col 1)) ; output is 1-based
+      (match t
+        [#f                   (loop)] ; skip whitespace
+        [(list 'End_of_input) (list (list "</div>"))]
+        [(list 'Error name)   (list (list "<p class='error'>" line "\t"col "\t"name"</p>") (loop))]
+        [(list name value)    (cons (list name value "</p>") (loop))]
+        [(list name)          (cons (list line col name)       (loop))]
+        [_ (cons (list error line col))])])))
 
 (define (display-tokens ts)
   (for ([t ts])
     (for ([x t])
       (display x) (display "\t\t"))
     (newline)))
+;--------------GUI----------------
 
-; ----------------FILES----------------
+;; Make a frame by instantiating the frame% class
+(define frame (new frame% [label "C++ Lexer"]))
 
-;(define inFile "micodigo_bien.cpp")  ; Correct file
-(define inFile "micodigo.cpp")  ; Incorrect file
+(define inFile "micodigo_bien.cpp")
+(define inFile2 "micodigo_bien.cpp")
+
+(new button% [parent frame]
+             [label "Select File 1"]
+             [callback
+              (lambda (button event)
+                (inFile (get-file))
+                (port->string (open-input-file inFile))
+                (display inFile))]
+                )
+
+
+(new button% [parent frame]
+             [label "Select File 2"]
+             [callback
+              (lambda (button event)
+                (inFile2 (get-file))
+                (port->string (open-input-file inFile2))
+                (display inFile2))]
+                )
+
+;; Make a button in the frame
+(new button% [parent frame]
+            [label "Run"]
+            ;; Callback procedure for a button click:
+            [callback
+              (lambda (button event)
+                ; (define inFile (get-file))
+                ; (port->string (open-input-file inFile))
+                ; (display inFile)
+                ; (define inFile2 (get-file))
+                ; (port->string (open-input-file inFile2))
+                ; (display inFile2)
 (define outFile "out.html")
 
 ; Call the lexer
-(display-tokens (string->tokens (port->string (open-input-file inFile))))
+;(display-tokens (string->tokens (port->string (open-input-file inFile))))
+
+(define (printLexer fileIn)
+  (display-lines (string->tokenshtml (port->string (open-input-file fileIn))) out)
+)
 
 ; Output file
 (define out (open-output-file outFile))
@@ -284,17 +318,10 @@
 
 (display "<div class='resaltador'>\n\n" out)
 
-(display-lines (string->tokenshtml (port->string (open-input-file inFile))) out)
-
-(display "<h1> Table </h1>" out)
-
-(display "<table>\n\n" out)
-
-(display "<tr> <th>Line</th> <th>Character</th> <th>Type</th> <th>Value</th> </tr>" out)
-
-(display-lines (string->tokenstable (port->string (open-input-file inFile))) out)
-
-(display "</table>\n\n" out)
+(let ([f (future (lambda () (printLexer inFile)))]
+      [f2 (future (lambda () (printLexer inFile2)))])
+  (touch f)
+  (touch f2))
 
 (display "</div>\n\n" out)
 (display "<h1> Console </h1>" out)
@@ -321,3 +348,14 @@
 
 ; Close the file
 (close-output-port out)
+                
+                )])
+
+;; Show the frame by calling its show method
+
+(send frame show #t)
+
+; ----------------FILES----------------
+
+;(define inFile "micodigo_bien.cpp")  ; Correct file
+;(define inFile "micodigo.cpp")  ; Incorrect file
