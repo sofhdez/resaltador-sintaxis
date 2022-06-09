@@ -246,26 +246,16 @@
 ;; Make a frame by instantiating the frame% class
 (define frame (new frame% [label "C++ Lexer"]))
 
-(define inFile "micodigo_bien.cpp")
-(define inFile2 "micodigo_bien.cpp")
+; (define inFile "micodigo_bien.cpp")
+; (define inFile2 "micodigo_bien.cpp")
 
 (new button% [parent frame]
              [label "Select File 1"]
              [callback
               (lambda (button event)
-                (inFile (get-file))
+                (define inFile (get-file-list))
                 (port->string (open-input-file inFile))
                 (display inFile))]
-                )
-
-
-(new button% [parent frame]
-             [label "Select File 2"]
-             [callback
-              (lambda (button event)
-                (inFile2 (get-file))
-                (port->string (open-input-file inFile2))
-                (display inFile2))]
                 )
 
 ;; Make a button in the frame
@@ -318,10 +308,22 @@
 
 (display "<div class='resaltador'>\n\n" out)
 
-(let ([f (future (lambda () (printLexer inFile)))]
-      [f2 (future (lambda () (printLexer inFile2)))])
-  (touch f)
-  (touch f2))
+; (let ([f (future (lambda () (printLexer inFile)))]
+;       [f2 (future (lambda () (printLexer inFile2)))])
+;   (touch f)
+;   (touch f2))
+
+  ; (define paths (get-file-list))
+
+  ; (define (aplicarLexer paths)
+  ;   (lines(open-input-string (port->string (open-input-file paths) #:close? #t))))
+
+  ; ;(aplicarLexer paths)
+
+
+;Paralelismo
+; (require pmap)
+; (pmapf printLexer paths)
 
 (display "</div>\n\n" out)
 (display "<h1> Console </h1>" out)
