@@ -241,53 +241,32 @@
     (for ([x t])
       (display x) (display "\t\t"))
     (newline)))
+
 ;--------------GUI----------------
 
 ;; Make a frame by instantiating the frame% class
 (define frame (new frame% [label "C++ Lexer"]))
-
-(define inFile "micodigo_bien.cpp")
-(define inFile2 "micodigo_bien.cpp")
-
-(new button% [parent frame]
-             [label "Select File 1"]
-             [callback
-              (lambda (button event)
-                (inFile (get-file))
-                (port->string (open-input-file inFile))
-                (display inFile))]
-                )
-
-
-(new button% [parent frame]
-             [label "Select File 2"]
-             [callback
-              (lambda (button event)
-                (inFile2 (get-file))
-                (port->string (open-input-file inFile2))
-                (display inFile2))]
-                )
+(define msg (new message% [parent frame]
+                          [label "Resaltador de sintaxis"]
+                          [font (make-object font% 10 'default 'normal 'bold)]))
+(define msg2 (new message%  [parent frame]
+                            [label "Selecciona dos archivos de texto."]))
 
 ;; Make a button in the frame
 (new button% [parent frame]
-            [label "Run"]
+            [label "Select Files"]
             ;; Callback procedure for a button click:
             [callback
               (lambda (button event)
-                ; (define inFile (get-file))
-                ; (port->string (open-input-file inFile))
-                ; (display inFile)
-                ; (define inFile2 (get-file))
-                ; (port->string (open-input-file inFile2))
-                ; (display inFile2)
+                (define inFile (get-file-list))
+                (port->string (open-input-file inFile))
+                (display inFile)
+
 (define outFile "out.html")
 
 ; Call the lexer
 ;(display-tokens (string->tokens (port->string (open-input-file inFile))))
 
-(define (printLexer fileIn)
-  (display-lines (string->tokenshtml (port->string (open-input-file fileIn))) out)
-)
 
 ; Output file
 (define out (open-output-file outFile))
