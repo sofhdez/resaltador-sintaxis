@@ -244,101 +244,102 @@
 
 ;--------------GUI----------------
 
-;; Make a frame by instantiating the frame% class
-(define frame (new frame% [label "C++ Lexer"]))
-(define msg (new message% [parent frame]
-                          [label "Resaltador de sintaxis"]
-                          [font (make-object font% 10 'default 'normal 'bold)]))
-(define msg2 (new message%  [parent frame]
-                            [label "Selecciona dos archivos de texto."]))
+; ;; Make a frame by instantiating the frame% class
+; (define frame (new frame% [label "C++ Lexer"]))
+; (define msg (new message% [parent frame]
+;                           [label "Resaltador de sintaxis"]
+;                           [font (make-object font% 10 'default 'normal 'bold)]))
+; (define msg2 (new message%  [parent frame]
+;                             [label "Selecciona dos archivos de texto."]))
 
 ;; Make a button in the frame
-(new button% [parent frame]
-            [label "Select Files"]
-            ;; Callback procedure for a button click:
-            [callback
-              (lambda (button event)
-                (define fileList (get-file-list))
-                (define file1 (list-ref fileList 0) )
-                (define file2(list-ref fileList 1) )
+; (new button% [parent frame]
+;             [label "Select Files"]
+;             ;; Callback procedure for a button click:
+;             [callback
+;               (lambda (button event)
+;                 (define fileList (get-file-list))
+;                 (define file1 (list-ref fileList 0) )
+;                 (define file2(list-ref fileList 1) )
+(time
+  (define outFile "out.html")
 
-(define outFile "out.html")
+  ; Call the lexer
+  ;(display-tokens (string->tokens (port->string (open-input-file fileList))))
+  (define (printLexer fileIn)
+    (display-lines (string->tokenshtml (port->string (open-input-file fileIn))) out)
+  )
 
-; Call the lexer
-;(display-tokens (string->tokens (port->string (open-input-file fileList))))
-(define (printLexer fileIn)
-  (display-lines (string->tokenshtml (port->string (open-input-file fileIn))) out)
+  ; Output file
+  (define out (open-output-file outFile))
+
+
+  (display "<!DOCTYPE html>\n\n" out)
+
+  (display "<html lang='es'>\n\n" out)
+
+
+  (display "<head>\n\n" out)
+
+
+  (display "<meta charset='UTF-8'>\n\n" out)
+  (display "<meta http-equiv='X-UA-Compatible' content='IE=edge'>\n\n" out)
+  (display "<meta name='viewport' content='width=device-width, initial-scale=1.0'>\n\n" out)
+  (display "<title>Lexer result</title>\n\n" out)
+
+  (display "<link rel='stylesheet' href='style.css'>\n\n" out)
+
+  (display "<script type='text/javascript' href='style.js'> </script>\n\n" out)
+
+  (display "</head>\n\n" out)
+
+  (display "<body>\n\n" out)
+
+  (display "<h1> Syntax highlighter </h1>" out)
+
+  (display "<div class='resaltador'>\n\n" out)
+
+  (let ([f (future (lambda () (printLexer "micodigo_bien.cpp")))]
+        [f2 (future (lambda () (printLexer "micodigo.cpp")))]
+        )
+    (display "<h2> Archivo 1 </h2>" out)
+    (touch f)
+    (display "<h2> Archivo 2 </h2>" out)
+    (touch f2)
+  )
+
+  (display "</h1>\n\n" out)
+  (display "<h1> Console </h1>" out)
+  (display "<br>\n\n" out)
+
+  (display "</body> \n\n" out)
+
+
+  (display "<script type='text/javascript'>  \n\n
+      var el = document.getElementsByClassName('error'); \n\n
+      console.log(el) \n\n
+      console.log(el.length) \n\n
+      for (var i = 0; i < el.length; i++) { \n\n
+          var currentEl = el[i]; \n\n
+          currentEl.style.bottom = -(i * 2) + 'rem'; \n\n
+          console.log(currentEl) \n\n
+      } \n\n
+      var body_element = document.querySelector('body'); \n\n
+      body_element.innerHTML = body_element.innerHTML.replaceAll('(', ''); \n\n
+      body_element.innerHTML = body_element.innerHTML.replaceAll(')', ''); \n\n
+  </script> \n\n" out)
+
+  (display "</html>\n\n" out)
+
+  ; Close the file
+  (close-output-port out)
 )
-
-; Output file
-(define out (open-output-file outFile))
-
-
-(display "<!DOCTYPE html>\n\n" out)
-
-(display "<html lang='es'>\n\n" out)
-
-
-(display "<head>\n\n" out)
-
-
-(display "<meta charset='UTF-8'>\n\n" out)
-(display "<meta http-equiv='X-UA-Compatible' content='IE=edge'>\n\n" out)
-(display "<meta name='viewport' content='width=device-width, initial-scale=1.0'>\n\n" out)
-(display "<title>Lexer result</title>\n\n" out)
-
-(display "<link rel='stylesheet' href='style.css'>\n\n" out)
-
-(display "<script type='text/javascript' href='style.js'> </script>\n\n" out)
-
-(display "</head>\n\n" out)
-
-(display "<body>\n\n" out)
-
-(display "<h1> Syntax highlighter </h1>" out)
-
-(display "<div class='resaltador'>\n\n" out)
-
-(let ([f (future (lambda () (printLexer file1)))]
-      [f2 (future (lambda () (printLexer file2)))]
-      )
-  (display "<h2> Archivo 1 </h2>" out)
-  (touch f)
-  (display "<h2> Archivo 2 </h2>" out)
-  (touch f2)
-)
-
-(display "</h1>\n\n" out)
-(display "<h1> Console </h1>" out)
-(display "<br>\n\n" out)
-
-(display "</body> \n\n" out)
-
-
-(display "<script type='text/javascript'>  \n\n
-    var el = document.getElementsByClassName('error'); \n\n
-    console.log(el) \n\n
-    console.log(el.length) \n\n
-    for (var i = 0; i < el.length; i++) { \n\n
-        var currentEl = el[i]; \n\n
-        currentEl.style.bottom = -(i * 2) + 'rem'; \n\n
-        console.log(currentEl) \n\n
-    } \n\n
-    var body_element = document.querySelector('body'); \n\n
-    body_element.innerHTML = body_element.innerHTML.replaceAll('(', ''); \n\n
-    body_element.innerHTML = body_element.innerHTML.replaceAll(')', ''); \n\n
-</script> \n\n" out)
-
-(display "</html>\n\n" out)
-
-; Close the file
-(close-output-port out)
                 
-                )])
+                ; )])
 
 ;; Show the frame by calling its show method
 
-(send frame show #t)
+; (send frame show #t)
 
 ; ----------------FILES----------------
 
