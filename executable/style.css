@@ -1,0 +1,115 @@
+*{
+  font-size: 25px;
+}
+
+.resaltador {
+  font-size: 25px;
+}
+
+.integer {
+  color: red;
+}
+
+.floatnumber {
+  color: rgb(134, 23, 23);
+}
+
+.char-literal {
+  color: rgb(122, 184, 29);
+}
+
+.string-literal {
+  color: rgb(2, 65, 2);
+}
+
+.datatype {
+  color: violet;
+}
+
+.bool {
+  color: rgb(255, 162, 0);
+}
+
+.library {
+  color: rgb(122, 184, 29)
+}
+
+.directive {
+  color: rgb(56, 183, 132)
+}
+
+.streams{
+  color: rgb(159, 237, 81)
+}
+
+.keyword {
+  color: rgb(52, 248, 81);
+}
+
+.conditional {
+  color: gold;
+}
+
+.loop {
+  color: rgb(142, 22, 255);
+}
+
+.operator {
+  color: rgb(255, 112, 60);
+}
+
+.misc {
+  color: rgb(255, 17, 255)
+}
+
+.delimiter {
+  color: rgb(71, 90, 161);
+}
+
+.symbol {
+  color: rgb(162, 50, 88);
+}
+
+.semicolon {
+  color: rgb(126, 150, 39);
+}
+
+.comma {
+  color: rgb(208, 55, 239);
+}
+
+.function {
+  color: rgb(12, 190, 255);
+}
+
+.comment {
+  color: rgb(212, 158, 57);
+}
+
+.variable {
+  color: hotpink;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+}
+
+.error {
+  position: absolute;
+  display: inline;
+  background-color: black;
+  color: white;
+  width: 100%;
+  margin: 0;
+  height: 2rem;
+}
+
+body {
+  position: relative;
+}
+
+h1 {
+  color: black;
+}
