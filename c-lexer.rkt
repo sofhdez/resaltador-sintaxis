@@ -258,14 +258,14 @@
             ;; Callback procedure for a button click:
             [callback
               (lambda (button event)
-                (define inFile (get-file-list))
-                (port->string (open-input-file inFile))
-                (display inFile)
+                (define fileList (get-file-list))
+                (define file1 (list-ref fileList 0) )
+                (define file2(list-ref fileList 1) )
 
 (define outFile "out.html")
 
 ; Call the lexer
-;(display-tokens (string->tokens (port->string (open-input-file inFile))))
+;(display-tokens (string->tokens (port->string (open-input-file fileList))))
 (define (printLexer fileIn)
   (display-lines (string->tokenshtml (port->string (open-input-file fileIn))) out)
 )
@@ -299,11 +299,11 @@
 
 (display "<div class='resaltador'>\n\n" out)
 
-(let ([f (future (lambda () (printLexer inFile)))]
-;      [f2 (future (lambda () (printLexer inFile2)))]
+(let ([f (future (lambda () (printLexer file1)))]
+      [f2 (future (lambda () (printLexer file2)))]
       )
   (touch f)
-;  (touch f2)
+  (touch f2)
 )
 
 (display "</div>\n\n" out)
@@ -340,5 +340,5 @@
 
 ; ----------------FILES----------------
 
-;(define inFile "micodigo_bien.cpp")  ; Correct file
-;(define inFile "micodigo.cpp")  ; Incorrect file
+;(define fileList "micodigo_bien.cpp")  ; Correct file
+;(define fileList "micodigo.cpp")  ; Incorrect file
