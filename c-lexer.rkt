@@ -302,11 +302,13 @@
 (let ([f (future (lambda () (printLexer file1)))]
       [f2 (future (lambda () (printLexer file2)))]
       )
+  (display "<h2> Archivo 1 </h2>" out)
   (touch f)
+  (display "<h2> Archivo 2 </h2>" out)
   (touch f2)
 )
 
-(display "</div>\n\n" out)
+(display "</h1>\n\n" out)
 (display "<h1> Console </h1>" out)
 (display "<br>\n\n" out)
 
