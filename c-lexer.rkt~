@@ -261,10 +261,12 @@
                 (define inFile (get-file-list))
                 (port->string (open-input-file inFile))
                 (display inFile)
+
 (define outFile "out.html")
 
 ; Call the lexer
 ;(display-tokens (string->tokens (port->string (open-input-file inFile))))
+
 
 ; Output file
 (define out (open-output-file outFile))
@@ -295,17 +297,10 @@
 
 (display "<div class='resaltador'>\n\n" out)
 
-(display-lines (string->tokenshtml (port->string (open-input-file inFile))) out)
-
-(display "<h1> Table </h1>" out)
-
-(display "<table>\n\n" out)
-
-(display "<tr> <th>Line</th> <th>Character</th> <th>Type</th> <th>Value</th> </tr>" out)
-
-(display-lines (string->tokenstable (port->string (open-input-file inFile))) out)
-
-(display "</table>\n\n" out)
+(let ([f (future (lambda () (printLexer inFile)))]
+      [f2 (future (lambda () (printLexer inFile2)))])
+  (touch f)
+  (touch f2))
 
 (display "</div>\n\n" out)
 (display "<h1> Console </h1>" out)
@@ -336,6 +331,7 @@
                 )])
 
 ;; Show the frame by calling its show method
+
 (send frame show #t)
 
 ; ----------------FILES----------------
