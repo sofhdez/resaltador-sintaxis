@@ -5,6 +5,7 @@
 ; Gael Eduardo Pérez Gómez A01753336
 
 #lang racket/gui
+(current-milliseconds)
 (require parser-tools/lex
         (prefix-in : parser-tools/lex-sre))
 
@@ -334,6 +335,7 @@
   ; Close the file
   (close-output-port out)
 )
+(current-milliseconds)
                 
                 ; )])
 
